@@ -607,15 +607,256 @@ for A, B, C, D in test_cases:
 df = pd.DataFrame(results, columns=["A", "B", "C", "D", "Valid Times"])
 tools.display_dataframe_to_user(name="Valid Time Results for Given Test Cases", dataframe=df)
 
+Question 9
+![image](https://github.com/user-attachments/assets/08a0cb0d-a50b-403b-95a6-897ac793e272)
+![image](https://github.com/user-attachments/assets/a3a3737d-857d-4646-a48f-1f26ba39ebe4)
+![image](https://github.com/user-attachments/assets/8f3d53cb-3553-44a3-9d19-284733de307f)
+Solt
+#!/bin/python3
+
+import math
+import os
+import random
+import re
+import sys
+from collections import Counter
+
+#
+# Complete the 'maximizeProcessingPower' function below.
+#
+# The function is expected to return a LONG_INTEGER.
+# The function accepts INTEGER_ARRAY processingPower as parameter.
+#
+
+def maximizeProcessingPower(processingPower):
+    # Count frequencies of processing powers
+    freq = Counter(processingPower)
+    uniqueValues = sorted(freq.keys())
+    
+    # DP variables
+    prev2, prev1 = 0, 0
+    
+    for i in range(len(uniqueValues)):
+        currentValue = uniqueValues[i] * freq[uniqueValues[i]]
+        if i > 0 and uniqueValues[i] == uniqueValues[i - 1] + 1:  # Corrected variable name
+            # Conflict: Either include current or skip it
+            temp = max(prev1, prev2 + currentValue)
+        else:
+            # No conflict: Add current value
+            temp = prev1 + currentValue
+        prev2, prev1 = prev1, temp
+    
+    return prev1
+
+if __name__ == '__main__':
+    fptr = open(os.environ['OUTPUT_PATH'], 'w')
+
+    processingPower_count = int(input().strip())
+
+    processingPower = []
+
+    for _ in range(processingPower_count):
+        processingPower_item = int(input().strip())
+        processingPower.append(processingPower_item)
+
+    result = maximizeProcessingPower(processingPower)
+
+    fptr.write(str(result) + '\n')
+
+    fptr.close()
+
+Question 10
+![image](https://github.com/user-attachments/assets/6ed0527f-72ac-4be0-af51-201606fc2b49)
+![image](https://github.com/user-attachments/assets/778dfe41-cf04-48b7-b279-e1ad9b2d1b69)
+![image](https://github.com/user-attachments/assets/fdc55265-58be-4765-abee-e56a66f2b5c7)
+![image](https://github.com/user-attachments/assets/e9540c9d-5485-429b-8d39-c2b355222bf8)
+#!/bin/python3
+
+import math
+import os
+import random
+import re
+import sys
 
 
+#
+# Complete the 'createMaximumCollaborations' function below.
+#
+# The function is expected to return an INTEGER.
+# The function accepts following parameters:
+#  1. INTEGER_ARRAY creatorsEngagementPower
+#  2. INTEGER minCreatorsRequired
+#  3. LONG_INTEGER minTotalEngagementPowerRequired
+#
+
+def createMaximumCollaborations(creatorsEngagementPower, minCreatorsRequired, minTotalEngagementPowerRequired):
+    n = len(creatorsEngagementPower)
+    max_collab = 0
+    i = 0
+
+    while i <= n - minCreatorsRequired:
+        team_power = 0
+        team_size = 0
+
+        for j in range(i, n):
+            team_power += creatorsEngagementPower[j]
+            team_size += 1
+
+            if team_size >= minCreatorsRequired and team_power >= minTotalEngagementPowerRequired:
+                max_collab += 1
+                i = j + 1  # Skip past the current team
+                break
+        else:
+            i += 1  # Increment `i` when no valid team is formed
+
+    return max_collab
 
 
+if __name__ == '__main__':
+    fptr = open(os.environ['OUTPUT_PATH'], 'w')
+
+    creatorsEngagementPower_count = int(input().strip())
+
+    creatorsEngagementPower = []
+
+    for _ in range(creatorsEngagementPower_count):
+        creatorsEngagementPower_item = int(input().strip())
+        creatorsEngagementPower.append(creatorsEngagementPower_item)
+
+    minCreatorsRequired = int(input().strip())
+
+    minTotalEngagementPowerRequired = int(input().strip())
+
+    result = createMaximumCollaborations(creatorsEngagementPower, minCreatorsRequired, minTotalEngagementPowerRequired)
+
+    fptr.write(str(result) + '\n')
+
+    fptr.close()
+Quest 11
+![image](https://github.com/user-attachments/assets/5880608d-13d1-4316-be0d-83a889f99418)
+![image](https://github.com/user-attachments/assets/c5f82843-6b86-4fdf-be8d-9b9f0a0478f7)
+![image](https://github.com/user-attachments/assets/03528060-46f5-4b2e-bf53-e376ffe14191)
+![image](https://github.com/user-attachments/assets/08cf915f-6a25-4557-8d39-7c82dd0a2731)
+![image](https://github.com/user-attachments/assets/bd2d721e-310e-4085-86c3-6e8228f075a2)
+
+Solution
+def getTime(conversation, infectedCategory):
+    # Efficient simulation of the infection propagation
+    time = 0
+    conversation = list(conversation)
+
+    while True:
+        found_infected = False
+        to_remove = set()  # Set to store indices to remove
+
+        # Identify positions to remove
+        for i in range(1, len(conversation)):
+            if conversation[i] == infectedCategory:
+                to_remove.add(i - 1)  # Add the left neighbor to removal set
+                found_infected = True
+
+        # Remove marked indices
+        conversation = [conversation[i] for i in range(len(conversation)) if i not in to_remove]
+
+        if not found_infected:  # Stop if no more infections
+            break
+
+        time += 1  # Increment time for each propagation step
+
+    return time
 
 
+# Test cases
+test_case_1 = ("pguxvg", 'v')  # Expected: 4
+test_case_2 = ("abcdaed", 'd')  # Expected: 3
+test_case_3 = ("bbbbb", 'b')    # Expected: 1
+test_case_4 = ("abcd", 'e')     # Expected: 0
+test_case_5 = ("aaaaa", 'a')    # Expected: 1
+
+# Run tests
+results = {
+    "Test Case 1": getTime(*test_case_1),
+    "Test Case 2": getTime(*test_case_2),
+    "Test Case 3": getTime(*test_case_3),
+    "Test Case 4": getTime(*test_case_4),
+    "Test Case 5": getTime(*test_case_5),
+}
+
+results
+
+Quest 12
+![image](https://github.com/user-attachments/assets/3b3ee954-6cdd-4b86-8eaa-f1356703b9d8)
+![image](https://github.com/user-attachments/assets/de501593-c0e2-48dc-8e92-98e5babecd79)
+
+sol
+from math import comb
+
+def diverseDeputation(m, w):
+    # Base cases: not enough people or diversity
+    if m < 1 or w < 1 or m + w < 3:
+        return 0
+
+    # Case 1: 2 men and 1 woman
+    men_case = comb(m, 2) if m >= 2 else 0
+    women_case = comb(w, 1) if w >= 1 else 0
+
+    # Case 2: 1 man and 2 women
+    man_case = comb(m, 1) if m >= 1 else 0
+    women_case_2 = comb(w, 2) if w >= 2 else 0
+
+    # Total combinations
+    total_combinations = men_case * women_case + man_case * women_case_2
+    return total_combinations
 
 
+if __name__ == '__main__':
+    fptr = open(os.environ['OUTPUT_PATH'], 'w')
 
+    m = int(input().strip())
+    w = int(input().strip())
+
+    result = diverseDeputation(m, w)
+
+    fptr.write(str(result) + '\n')
+    fptr.close()
+
+
+Question 13
+![image](https://github.com/user-attachments/assets/d9a67a17-9746-44a5-b208-a9bf3cdd79c4)
+![image](https://github.com/user-attachments/assets/9da5f187-7592-4cbd-80a1-94db15b31c12)
+![image](https://github.com/user-attachments/assets/a11a91dd-005b-4de9-a55d-ea9ce63310f6)
+Solution
+from itertools import compress
+
+def getTime(conversation, infectedCategory):
+    time = 0
+    infected_positions = set()
+
+    # Track initial infected positions
+    for i in range(1, len(conversation)):
+        if conversation[i] == infectedCategory:
+            infected_positions.add(i - 1)
+
+    # Process until no more infections occur
+    while infected_positions:
+        keep = [True] * len(conversation)
+        new_infected_positions = set()
+        found_infected = False
+
+        # Update positions of new infections
+        for pos in infected_positions:
+            if pos > 0 and conversation[pos - 1] != infectedCategory:
+                new_infected_positions.add(pos - 1)
+                keep[pos - 1] = False
+                found_infected = True
+
+        # Update the infected positions for the next iteration
+        infected_positions = new_infected_positions
+        if not found_infected:
+            break
+        time += 1
+
+    return time
 
 
 
