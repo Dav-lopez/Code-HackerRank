@@ -425,6 +425,191 @@ for test_input, expected in test_cases:
 
 test_results
 
+Question 7
+![image](https://github.com/user-attachments/assets/0397cc0d-d2ee-42cf-b64d-6e5f0b5e3305)
+![image](https://github.com/user-attachments/assets/b80f8051-4b0f-4515-9788-464a6b2aeee6)
+![image](https://github.com/user-attachments/assets/1b526368-6722-4203-a8fc-4c5f660a32b4)
+![image](https://github.com/user-attachments/assets/e3d70207-cff2-49ef-ad5e-d4a97f0c9c7d)
+from collections import Counter
+
+def solution(A, B):
+    """
+    Calculate the number of corresponding fragments between strings A and B.
+    
+    Args:
+    - A: string of length N
+    - B: string of length N
+    
+    Returns:
+    - int: number of corresponding fragments
+    """
+    n = len(A)
+    count = 0
+
+    for i in range(n):
+        for j in range(i + 1, n + 1):  # Fragment lengths range from 1 to n
+            fragment_a = A[i:j]
+            fragment_b = B[i:j]
+            # Check if fragments are anagrams by comparing character counts
+            if Counter(fragment_a) == Counter(fragment_b):
+                count += 1
+
+    return count
+
+
+# Test cases
+test_cases = [
+    ("dBacaAA", "caBdaaA", 5),
+    ("zzzX", "zzzX", 10),
+    ("abc", "ABC", 0),
+    ("ZZXYOYZ", "OOYXZZZ", 2),
+]
+
+results = []
+for A, B, expected in test_cases:
+    result = solution(A, B)
+    results.append((A, B, expected, result, result == expected))
+
+# Display results in a DataFrame
+import pandas as pd
+df = pd.DataFrame(results, columns=["String A", "String B", "Expected Output", "Computed Output", "Pass/Fail"])
+import ace_tools as tools; tools.display_dataframe_to_user(name="Corresponding Fragments Results", dataframe=df)
+
+Question 8
+![image](https://github.com/user-attachments/assets/6b5bae9e-1837-4d75-805a-6223b57ea1db)
+![image](https://github.com/user-attachments/assets/8ae0b932-0730-4ca3-9693-a5b463f616f1)
+![image](https://github.com/user-attachments/assets/a1b2ceec-3a9a-4df1-80be-ede72364a41f)
+Solution
+from itertools import permutations
+
+def solution(A, B, C, D):
+    """
+    Count the number of valid times that can be formed using the given digits.
+    
+    Args:
+    - A, B, C, D: Integers representing the four digits.
+    
+    Returns:
+    - int: Number of valid times.
+    """
+    digits = [A, B, C, D]
+    valid_times = 0
+
+    # Generate all permutations of the four digits
+    for perm in permutations(digits):
+        hours = perm[0] * 10 + perm[1]  # First two digits as hours
+        minutes = perm[2] * 10 + perm[3]  # Last two digits as minutes
+
+        # Check if the time is valid (24-hour format)
+        if 0 <= hours < 24 and 0 <= minutes < 60:
+            valid_times += 1
+
+    return valid_times
+
+
+# Test cases
+test_cases = [
+    (1, 8, 3, 2, 6),  # Example 1: 6 valid times
+    (2, 3, 3, 2, 3),  # Example 2: 3 valid times
+    (6, 2, 4, 7, 0),  # Example 3: 0 valid times
+]
+
+results = []
+for A, B, C, D, expected in test_cases:
+    result = solution(A, B, C, D)
+    results.append((A, B, C, D, expected, result, result == expected))
+
+# Display results in a DataFrame
+df = pd.DataFrame(results, columns=["A", "B", "C", "D", "Expected Output", "Computed Output", "Pass/Fail"])
+tools.display_dataframe_to_user(name="Valid Time Results", dataframe=df)
+
+def validate(A, B, C, D):
+    """
+    Validate if the given 4 digits form a valid 24-hour time.
+    
+    Args:
+    - A, B, C, D: Integers representing the digits of a time.
+    
+    Returns:
+    - bool: True if the digits form a valid time, False otherwise.
+    """
+    hours = A * 10 + B
+    minutes = C * 10 + D
+    return 0 <= hours < 24 and 0 <= minutes < 60
+
+
+def permutations(arr):
+    """
+    Generate all permutations of an array without importing a library.
+    
+    Args:
+    - arr: List of integers to permute.
+    
+    Returns:
+    - List[List[int]]: All permutations of the input array.
+    """
+    if len(arr) <= 1:
+        return [arr]
+    perm_list = []
+    for i in range(len(arr)):
+        remaining = arr[:i] + arr[i+1:]
+        for perm in permutations(remaining):
+            perm_list.append([arr[i]] + perm)
+    return perm_list
+
+
+def unique(arr):
+    """
+    Filter unique permutations from a list of permutations.
+    
+    Args:
+    - arr: List of permutations (list of lists).
+    
+    Returns:
+    - List[List[int]]: Unique permutations.
+    """
+    unique_perms = []
+    for d in arr:
+        if d not in unique_perms:
+            unique_perms.append(d)
+    return unique_perms
+
+
+def solution(A, B, C, D):
+    """
+    Count the number of valid times that can be formed using the given digits.
+    
+    Args:
+    - A, B, C, D: Integers representing the four digits.
+    
+    Returns:
+    - int: Number of valid times.
+    """
+    perms = unique(permutations([A, B, C, D]))
+    return sum(1 for perm in perms if validate(*perm))
+
+
+# Test cases
+test_cases = [
+    (2, 2, 5, 9),  # Expected: Valid combinations exist
+    (0, 0, 0, 0),  # Expected: Only one valid time (00:00)
+    (1, 2, 3, 4),  # Expected: Multiple valid times
+    (5, 5, 5, 5),  # Expected: No valid times
+    (1, 1, 1, 2),  # Expected: Few valid times
+]
+
+# Run test cases
+results = []
+for A, B, C, D in test_cases:
+    results.append((A, B, C, D, solution(A, B, C, D)))
+
+# Display results
+df = pd.DataFrame(results, columns=["A", "B", "C", "D", "Valid Times"])
+tools.display_dataframe_to_user(name="Valid Time Results for Given Test Cases", dataframe=df)
+
+
+
+
 
 
 
